@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Text
 from sqlalchemy.dialects.postgresql import JSONB
-from src.database import Base
+from src.database.core import Base
 
 
 class Room(Base):

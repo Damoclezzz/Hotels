@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB
-from app.database import Base
+from src.database import Base
 
 
 class Hotel(Base):

@@ -1,10 +1,10 @@
 from sqlalchemy import select
 
-from src.database.core import async_session_maker
+from src.database.core import async_session_maker, Base
 
 
 class BaseRepository:
-    model = None
+    model: Base = None
 
     @classmethod
     async def find_by_id(cls, model_id: int):
@@ -14,7 +14,7 @@ class BaseRepository:
     @classmethod
     async def find_one_or_none(cls, **filter_by):
         async with async_session_maker() as session:
-            query = select(cls.model).filter_by(**filter_by)
+            query = select(cls.model.__table__.c).filter_by(**filter_by)
 
             result = await session.execute(query)
 
@@ -23,7 +23,7 @@ class BaseRepository:
     @classmethod
     async def find_all(cls, **filter_by):
         async with async_session_maker() as session:
-            query = select(cls.model).filter_by(**filter_by)
+            query = select(cls.model.__table__.c).filter_by(**filter_by)
 
             result = await session.execute(query)
 

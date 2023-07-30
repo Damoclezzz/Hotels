@@ -25,9 +25,8 @@ def upgrade() -> None:
         sa.Column('hashed_password', sa.String(), nullable=False),
         sa.PrimaryKeyConstraint('id')
     )
-    op.drop_table('user')
     op.drop_constraint('booking_user_id_fkey', 'booking', type_='foreignkey')
-    op.create_foreign_key(None, 'booking', 'users', ['user_id'], ['id'])
+    op.drop_table('user')
     # ### end Alembic commands ###
 
 

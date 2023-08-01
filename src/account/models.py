@@ -2,8 +2,8 @@ from sqlalchemy import Column, Integer, String
 from src.database.core import Base
 
 
-class User(Base):
-    __tablename__ = 'users'
+class Account(Base):
+    __tablename__ = 'account'
 
     id = Column(Integer, primary_key=True)
     email = Column(String, nullable=False)

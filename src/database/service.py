@@ -1,10 +1,11 @@
-from sqlalchemy import select, insert, TableClause
+from sqlalchemy import select, insert
 
 from src.database.core import async_session_maker, Base
+from typing import Type
 
 
 class BaseRepository:
-    model: TableClause = None
+    model: Type[Base] = None
 
     @classmethod
     async def find_by_id(cls, model_id: int):
@@ -32,8 +33,8 @@ class BaseRepository:
     @classmethod
     async def x(cls, **data):
         async with async_session_maker() as session:
-            query = insert(cls.model).values(**data).returning(cls.model.c)
+            query = insert(cls.model).values(**data).returning(cls.model)
 
             result = await session.execute(query)
 
-            return result.mappings().all()
+            return result.mappings().first()

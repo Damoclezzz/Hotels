@@ -3,10 +3,10 @@ from datetime import date
 from pydantic import BaseModel
 
 
-class SBooking(BaseModel):
+class Booking(BaseModel):
     id: int
     room_id: int
-    user_id: int
+    account_id: int
     date_from: date
     date_to: date
     price: int

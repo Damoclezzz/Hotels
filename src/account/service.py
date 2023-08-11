@@ -39,7 +39,7 @@ class AccountService(BaseRepository): # TODO: Replace inheritance to var
 
     @classmethod
     def set_token(cls, account: Account, response: Response) -> str:
-        access_token = create_access_token({'sub': account.id})
+        access_token = create_access_token({'sub': str(account.id)})
         response.set_cookie("booking_access_token", access_token, httponly=True)
 
         return access_token

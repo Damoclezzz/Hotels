@@ -1,4 +1,4 @@
-from sqlalchemy import select, insert
+from sqlalchemy import select
 
 from src.database.core import async_session_maker, Base
 from typing import Type
@@ -19,7 +19,7 @@ class BaseRepository:
 
             result = await session.execute(query)
 
-            return result.mappings().one_or_none()
+            return result.one_or_none()
 
     @classmethod
     async def find_all(cls, **filter_by):
@@ -28,13 +28,14 @@ class BaseRepository:
 
             result = await session.execute(query)
 
-            return result.mappings().all()
+            return result.all()
 
     @classmethod
-    async def x(cls, **data):
+    async def add(cls, data: Base):
         async with async_session_maker() as session:
-            query = insert(cls.model).values(**data).returning(cls.model)
+            session.add(data)
+            await session.commit()
 
-            result = await session.execute(query)
+            await session.refresh(data)
 
-            return result.mappings().first()
+            return data

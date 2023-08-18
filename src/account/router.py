@@ -1,5 +1,8 @@
-from fastapi import APIRouter, HTTPException, status, Response
+from typing import Annotated
 
+from fastapi import APIRouter, HTTPException, status, Response, Depends
+
+from src.account.dependencies import get_current_account
 from src.account.schemas import AccountBase, CreateAccount, AuthAccount, Token
 from src.account.service import AccountService as Service
 from src.account.models import Account
@@ -26,11 +29,11 @@ async def login(account_data: AuthAccount, response: Response):
     return Token(token=Service.set_token(account, response))
 
 
-@router.get('/{account_id}', response_model=AccountBase)
-async def get_account(account_id: int):
-    account: Account = await Service.find_one_or_none(id=account_id)
+@router.post('/logout')
+async def logout(response: Response):
+    Service.delete_token(response)
 
-    if account is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Account not found')
 
-    return account
+@router.get('/account', response_model=AccountBase)
+async def get_account(current_account: Annotated[Account, Depends(get_current_account)]):
+    return current_account

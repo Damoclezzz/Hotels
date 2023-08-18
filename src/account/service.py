@@ -44,3 +44,6 @@ class AccountService(BaseRepository): # TODO: Replace inheritance to var
 
         return access_token
 
+    @classmethod
+    def delete_token(cls, response: Response) -> None:
+        response.delete_cookie('booking_access_token')

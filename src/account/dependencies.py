@@ -4,6 +4,7 @@ from fastapi import Request, HTTPException, status, Depends
 from jose import jwt, JWTError
 
 from config import settings
+from src.account.models import Account
 from src.account.service import AccountService
 
 
@@ -14,7 +15,7 @@ def get_token(request: Request):
     return token
 
 
-async def get_current_account(access_token: str = Depends(get_token)):
+async def get_current_account(access_token: str = Depends(get_token)) -> Account:
     try:
         payload = jwt.decode(
             access_token, settings.TOKEN_SECRET_KEY, settings.TOKEN_ALGORITHM

@@ -10,8 +10,8 @@ from src.account.schemas import CreateAccount, AuthAccount
 from src.account.auth import get_password_hash, verify_password, create_access_token
 
 
-class AccountService(BaseRepository): # TODO: Replace inheritance to var
-    model = Account
+class AccountService:
+    repository = BaseRepository(Account)
 
     @classmethod
     async def create_account(cls, account_data: CreateAccount):
@@ -22,11 +22,11 @@ class AccountService(BaseRepository): # TODO: Replace inheritance to var
             hashed_password=hashed_password,
         )
 
-        return await cls.add(account)
+        return await cls.repository.add(account)
 
     @classmethod
     async def authenticate(cls, account_data: AuthAccount) -> Account:
-        account: Optional[Account] = await cls.find_one_or_none(email=account_data.email)
+        account: Optional[Account] = await cls.repository.find_one_or_none(email=account_data.email)
         if not account:
             raise AccountNotExistsException()
 

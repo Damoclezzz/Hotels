@@ -18,7 +18,7 @@ router = APIRouter(
 
 @router.post('/register', response_model=AccountBase)
 async def create_account(account_data: CreateAccount):
-    if await Service.find_one_or_none(email=account_data.email) is not None:
+    if await Service.repository.find_one_or_none(email=account_data.email) is not None:
         raise AccountAlreadyExistsException()
 
     return await Service.create_account(account_data)

@@ -5,33 +5,31 @@ from typing import Type
 
 
 class BaseRepository:
-    model: Type[Base] = None
+    def __init__(self, model: Type[Base]):
+        self.model = model
 
-    @classmethod
-    async def find_by_id(cls, model_id: int):
+    async def find_by_id(self, model_id: int):
         async with async_session_maker() as session:
-            return await session.get(cls.model, model_id)
+            return await session.get(self.model, model_id)
 
-    @classmethod
-    async def find_one_or_none(cls, **filter_by):
+    async def find_one_or_none(self, **filter_by):
         async with async_session_maker() as session:
-            query = select(cls.model.__table__.c).filter_by(**filter_by)
+            query = select(self.model.__table__.c).filter_by(**filter_by)
 
             result = await session.execute(query)
 
             return result.one_or_none()
 
-    @classmethod
-    async def find_all(cls, **filter_by):
+    async def find_all(self, **filter_by):
         async with async_session_maker() as session:
-            query = select(cls.model.__table__.c).filter_by(**filter_by)
+            query = select(self.model.__table__.c).filter_by(**filter_by)
 
             result = await session.execute(query)
 
             return result.all()
 
-    @classmethod
-    async def add(cls, data: Base):
+    @staticmethod
+    async def add(data: Base):
         async with async_session_maker() as session:
             session.add(data)
             await session.commit()

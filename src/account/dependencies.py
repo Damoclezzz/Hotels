@@ -6,6 +6,9 @@ from jose import jwt, JWTError
 from config import settings
 from src.account.models import Account
 from src.account.service import AccountService
+from src.exceptions import (
+    TokenNotValidException, TokenExpiredException, TokenSubKeyNotExists, AccountNotExistsException
+)
 
 
 def get_token(request: Request):
@@ -21,18 +24,18 @@ async def get_current_account(access_token: str = Depends(get_token)) -> Account
             access_token, settings.TOKEN_SECRET_KEY, settings.TOKEN_ALGORITHM
         )
     except JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token is not valid')
+        raise TokenNotValidException()
 
     expire: str = payload.get('exp')
     if not expire or (int(expire) < datetime.utcnow().timestamp()):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token is expired')
+        raise TokenExpiredException()
 
     account_id: str = payload.get('sub')
     if not account_id:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token has not "sub" parameter')
+        raise TokenSubKeyNotExists()
 
     account = await AccountService.find_by_id(int(account_id))
     if not account:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Account does not exists')
+        raise AccountNotExistsException()
 
     return account

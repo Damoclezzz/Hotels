@@ -6,6 +6,7 @@ from src.database.service import BaseRepository
 from src.account.models import Account
 from src.account.schemas import CreateAccount, AuthAccount
 from src.account.auth import get_password_hash, verify_password, create_access_token
+from src.exceptions import IncorrectLoginOrPasswordException, AccountNotExistsException
 
 
 class AccountService(BaseRepository): # TODO: Replace inheritance to var
@@ -26,14 +27,11 @@ class AccountService(BaseRepository): # TODO: Replace inheritance to var
     async def authenticate(cls, account_data: AuthAccount) -> Account:
         account: Optional[Account] = await cls.find_one_or_none(email=account_data.email)
         if not account:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail='Account with this email does not exists'
-            )
+            raise AccountNotExistsException()
 
         is_valid_password = verify_password(account_data.password, account.hashed_password)
         if not is_valid_password:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Wrong password')
+            raise IncorrectLoginOrPasswordException()
 
         return account
 

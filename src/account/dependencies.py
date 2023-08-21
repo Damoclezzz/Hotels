@@ -3,12 +3,12 @@ from datetime import datetime
 from fastapi import Request, HTTPException, status, Depends
 from jose import jwt, JWTError
 
+from src.exceptions.auth.token import TokenValidationException, TokenExpiredException, TokenSubKeyNotExists
+from src.exceptions.auth.credentials import AccountNotExistsException
+
 from config import settings
 from src.account.models import Account
 from src.account.service import AccountService
-from src.exceptions import (
-    TokenNotValidException, TokenExpiredException, TokenSubKeyNotExists, AccountNotExistsException
-)
 
 
 def get_token(request: Request):
@@ -24,7 +24,7 @@ async def get_current_account(access_token: str = Depends(get_token)) -> Account
             access_token, settings.TOKEN_SECRET_KEY, settings.TOKEN_ALGORITHM
         )
     except JWTError:
-        raise TokenNotValidException()
+        raise TokenValidationException()
 
     expire: str = payload.get('exp')
     if not expire or (int(expire) < datetime.utcnow().timestamp()):

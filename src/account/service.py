@@ -1,12 +1,13 @@
 from typing import Optional
 
-from fastapi import HTTPException, status, Response
+from fastapi import Response
+
+from src.exceptions.auth.credentials import IncorrectLoginOrPasswordException, AccountNotExistsException
 
 from src.database.service import BaseRepository
 from src.account.models import Account
 from src.account.schemas import CreateAccount, AuthAccount
 from src.account.auth import get_password_hash, verify_password, create_access_token
-from src.exceptions import IncorrectLoginOrPasswordException, AccountNotExistsException
 
 
 class AccountService(BaseRepository): # TODO: Replace inheritance to var
